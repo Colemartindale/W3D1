@@ -53,11 +53,33 @@ end
 
 class Array
     def bubble_sort!(&prc)
+        changed = true
+
+        while changed
+            changed = false
+
+            (0...length - 1).each do |i|
+                if prc.call(self[i], self[i + 1]) > 0
+                    self[i], self[i+ 1] = self[i + 1], self[i]
+                    changed = true
+                end
+            end
+            
+        end
+        self
     end
 
     def bubble_sort(&prc)
+        arr = self.clone
+        arr.bubble_sort!(&prc)
     end
 end
+
+
+# arr = [0, 5, 9, 10, 2]
+# arr2 = arr.bubble_sort { |a, b| a <=> b }
+# p arr2
+# p arr
 
 # ### Substrings and Subwords
 #
@@ -73,17 +95,38 @@ end
 # words).
 
 def substrings(string)
+    hash = Hash.new
+
+    (0..string.length - 1).each do |i|
+        (i..string.length - 1).each do |j|
+            hash[string[i..j]] = true
+        end
+    end
+    hash.keys
 end
 
+# p substrings('hello')
+# p substrings('cat')
+
+
 def subwords(word, dictionary)
+     sub_strings = substrings(word)
+     sub_strings.select { |ele| dictionary.include?(ele) }
+
 end
+
+# dictionary = [ 'at', 'a', 'cat']
+# p subwords('cat', dictionary)
 
 # ### Doubler
 # Write a `doubler` method that takes an array of integers and returns an
 # array with the original elements multiplied by two.
 
 def doubler(array)
+    arr.map { |ele| ele * 2 }
 end
+
+p doubler [1, 2, 3, 4]
 
 # ### My Each
 # Extend the Array class to include a method named `my_each` that takes a
