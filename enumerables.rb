@@ -37,6 +37,49 @@ class Array
         my_select { |ele| prc.call(ele) }.length > 0
     end
 
+    def my_all?(&prc)
+        my_select { |ele| prc.call(ele) }.length == length
+    end
+
+    def my_flatten
+        
+        arr = []
+
+        my_each do |ele|
+            if ele.is_a?(Array)
+                arr += ele.my_flatten
+            else
+                arr << ele
+            end
+        end
+        arr
+    end
+
+    def my_zip(*args)
+        arr = []
+        (0...length).each do |i|
+            new_arr = []
+            new_arr << self[i]
+            args.each do |arg|
+                new_arr << arg[i]
+            end
+            arr << new_arr
+        end
+        arr
+    end
+
+    def my_rotate(n=1)
+        arr = self.clone
+        if n.positive?
+            n.times { arr.push(arr.shift) }
+        else
+            n *= -1 
+            n.times { arr.unshift(arr.pop) } 
+        end
+        arr
+    end
+
+
 end
 
 
@@ -63,8 +106,26 @@ end
 # p a.my_reject { |num| num > 1 } # => [1]
 # p a.my_reject { |num| num == 4 } # => [1, 2, 3]
 
-a = [1, 2, 3]
-p a.my_any? { |num| num > 1 } # => true
-p a.my_any? { |num| num == 4 } # => false
-# a.my_all? { |num| num > 1 } # => false
-# a.my_all? { |num| num < 4 } # => true
+# a = [1, 2, 3]
+# # p a.my_any? { |num| num > 1 } # => true
+# # p a.my_any? { |num| num == 4 } # => false
+# p a.my_all? { |num| num > 1 } # => false
+# p a.my_all? { |num| num < 4 } # => true
+
+# p [1, 2, 3, [4, [5, 6]], [[[7]], 8]].my_flatten # => [1, 2, 3, 4, 5, 6, 7, 8]
+
+# a = [ 4, 5, 6 ]
+# b = [ 7, 8, 9 ]
+# p [1, 2, 3].my_zip(a, b) # => [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+# p a.my_zip([1,2], [8])   # => [[4, 1, 8], [5, 2, nil], [6, nil, nil]]
+# p [1, 2].my_zip(a, b)    # => [[1, 4, 7], [2, 5, 8]]
+
+# c = [10, 11, 12]
+# d = [13, 14, 15]
+# p [1, 2].my_zip(a, b, c, d)    # => [[1, 4, 7, 10, 13], [2, 5, 8, 11, 14]]
+
+a = [ "a", "b", "c", "d" ]
+p a.my_rotate         #=> ["b", "c", "d", "a"]
+p a.my_rotate(2)      #=> ["c", "d", "a", "b"]
+p a.my_rotate(-3)     #=> ["b", "c", "d", "a"]
+p a.my_rotate(15)     #=> ["d", "a", "b", "c"]
