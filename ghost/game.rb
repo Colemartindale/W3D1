@@ -5,10 +5,9 @@ class Game
 
     attr_reader :current_player, :fragment
 
-    def initialize(player1, player2, dictionary)
-        @player1 = player1
-        @player2 = player2
-        @current_player = player1
+    def initialize(players, dictionary)
+        @players = players
+        @current_player = players[0]
         @previous_player = nil
         @fragment = ""
         @dictionary = dictionary
@@ -19,13 +18,14 @@ class Game
         "GHOST"[0...@losses[player]]
     end
 
-    def is_over?
-        @losses[@player1] == 5 || @losses[@player2] == 5
+    def is_over?        
+        @players.length == 1
     end
 
     def display_standings
-        puts "#{@player1.name}: #{record(@player1)}"
-        puts "#{@player2.name}: #{record(@player2)}"
+        @players.each do |player|
+            puts "#{player.name}: #{record(player)}"
+        end
     end
 
     def run
@@ -36,12 +36,21 @@ class Game
                 play_round
             end
             puts "#{@current_player.name} loses!"
-            @fragment = ""
-            next_player!
+            if is_out?(@current_player)
+                puts "#{@current_player.name} is out!"                
+                next_player!
+                @players.pop
+            else
+                next_player!
+            end
+            @fragment = ""          
         end
         display_standings
-        next_player!
-        puts "#{@current_player.name} is the ultimate loser!"
+        puts "#{@current_player.name} is the ultimate winner!"
+    end
+
+    def is_out?(player)
+        @losses[player] == 5
     end
 
     def play_round
@@ -62,8 +71,11 @@ class Game
     end
 
     def next_player!
+
         @previous_player = @current_player
-        @current_player = @current_player == @player1 ? @player2 : @player1
+        @players.rotate!
+        @current_player = @players[0]
+        
     end
 
     def take_turn(player)
@@ -84,8 +96,6 @@ class Game
         @dictionary.include?(fragment)
     end
 
-
-
 end
 
 
@@ -96,7 +106,9 @@ dictionary = dictionary.to_set
 
 player1 = Player.new('Steve')
 player2 = Player.new('Ernesta')
+player3 = Player.new('Bwian')
 
-game = Game.new(player1, player2, dictionary)
+players = [player1, player2, player3]
+game = Game.new(players, dictionary)
 
 game.run
