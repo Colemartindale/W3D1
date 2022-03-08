@@ -1,4 +1,4 @@
-
+require_relative 'player.rb'
 require "set"
 
 class Game
@@ -15,7 +15,7 @@ class Game
     end
 
     def play_round
-
+        
     end
 
     def next_player!
@@ -24,8 +24,19 @@ class Game
     end
 
     def take_turn(player)
-        puts "Please add a character"
+         guess = player.guess_char
+
     end
+
+    def valid_play?(string)
+        alphabet = ('a'..'z').to_a
+        return false if !alphabet.include?(string)
+
+        new_fragment = @fragment + string
+
+        return @dictionary.any? { |el| el.start_with?(new_fragment) }
+    end
+
 end
 
 
@@ -33,3 +44,9 @@ file = File.open("dictionary.txt")
 dictionary = file.readlines.map(&:chomp)
 file.close
 dictionary = dictionary.to_set
+
+player1 = Player.new('Steve')
+player2 = Player.new('Ernesta')
+
+game = Game.new(player1, player2, dictionary)
+
